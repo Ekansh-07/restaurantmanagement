@@ -36,9 +36,9 @@ namespace restaurant_management
         }
 
         [WebMethod]
-        public string GetUserOrder(int curUser)
+        public string GetUserCartDetails(int curUser)
         {
-            return JsonConvert.SerializeObject(orderOb.GetUserOrder(curUser));
+            return JsonConvert.SerializeObject(orderOb.GetUserCartDetails(curUser));
         }
 
         [WebMethod]
@@ -48,6 +48,13 @@ namespace restaurant_management
             mp = JsonConvert.DeserializeObject<Order_Mapping>(curOrder);
             return orderOb.UpdateExistingCart(mp);
 
+        }
+
+        [WebMethod]
+
+        public bool PlaceOrder(int userId)
+        {
+            return orderOb.PlaceOrder(userId);
         }
     }
 }

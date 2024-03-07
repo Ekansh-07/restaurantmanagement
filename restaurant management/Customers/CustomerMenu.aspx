@@ -91,14 +91,12 @@
                 success: function (response) {
                     items = JSON.parse(response.d);
                     cart = items.Items;
-                    console.log(cart);
                     if (cart == null || JSON.stringify(cart) == "{}") {
                         cart = {};
                         $("#cartBtn").hide();
                     }
                     else {
                         for (item in cart) {
-                            console.log(cart[item]);
                             $(`.quantity[data-row="${item}"]`).text(cart[item])
                         }
                     }

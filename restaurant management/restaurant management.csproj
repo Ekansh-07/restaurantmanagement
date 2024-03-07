@@ -45,6 +45,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PayPal, Version=1.9.1.0, Culture=neutral, PublicKeyToken=5b4afc1ccaef40fb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PayPal.1.9.1\lib\net451\PayPal.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -130,6 +133,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Customers\CustomerMenu.aspx" />
     <Content Include="Customers\CustomerOrder.aspx" />
+    <Content Include="Customers\OrderDetails.aspx" />
     <Content Include="Customers\Profile.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="EmailFunctionality.asmx" />
@@ -137,6 +141,7 @@
     <Content Include="Global.asax" />
     <Content Include="images\user.png" />
     <Content Include="Admin\Menu.aspx" />
+    <Content Include="Payments\CompletePayment.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -169,6 +174,7 @@
     <Content Include="temporary.aspx" />
     <Content Include="WS.asmx" />
     <Content Include="WS2.asmx" />
+    <Content Include="WS3.asmx" />
     <None Include=".editorconfig" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
@@ -251,6 +257,7 @@
     <Compile Include="Common\common.cs" />
     <Compile Include="Common\EmailHandler.cs" />
     <Compile Include="Common\Orders.cs" />
+    <Compile Include="Common\PaypalHandler.cs" />
     <Compile Include="Common\Recipe.cs" />
     <Compile Include="Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
@@ -272,6 +279,13 @@
     </Compile>
     <Compile Include="Customers\CustomerOrder.aspx.designer.cs">
       <DependentUpon>CustomerOrder.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customers\OrderDetails.aspx.cs">
+      <DependentUpon>OrderDetails.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customers\OrderDetails.aspx.designer.cs">
+      <DependentUpon>OrderDetails.aspx</DependentUpon>
     </Compile>
     <Compile Include="Customers\Profile.aspx.cs">
       <DependentUpon>Profile.aspx</DependentUpon>
@@ -302,6 +316,13 @@
       <DependentUpon>Menu.aspx</DependentUpon>
     </Compile>
     <Compile Include="Modal\Modal.cs" />
+    <Compile Include="Payments\CompletePayment.aspx.cs">
+      <DependentUpon>CompletePayment.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Payments\CompletePayment.aspx.designer.cs">
+      <DependentUpon>CompletePayment.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
@@ -337,6 +358,10 @@
     </Compile>
     <Compile Include="WS2.asmx.cs">
       <DependentUpon>WS2.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WS3.asmx.cs">
+      <DependentUpon>WS3.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

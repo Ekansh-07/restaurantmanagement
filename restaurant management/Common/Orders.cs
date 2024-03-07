@@ -143,7 +143,7 @@ namespace restaurant_management.Common
 
         }
 
-        public List<Recipe> GetUserOrder(int userId)
+        public List<Recipe> GetUserCartDetails(int userId)
         {
             List<Recipe> list = new List<Recipe>();
             using (SqlConnection con = new SqlConnection(strcon))
@@ -185,5 +185,81 @@ namespace restaurant_management.Common
                 }
             }
         }
+
+        public bool PlaceOrder(int userId,int cost,int adr)
+        {
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                con.Open();
+                try
+                {
+                    using (SqlTransaction tran = con.BeginTransaction())
+                    {
+                        
+                        string query = "EXEC PLACEORDER @USER = @USERID, @PRICE = @COST, @ADR = @ADR";
+                        SqlCommand cmd = new SqlCommand(query, con, tran);
+                        cmd.Parameters.AddWithValue("USERID", userId);                       
+                        cmd.Parameters.AddWithValue("COST", cost);                       
+                        cmd.Parameters.AddWithValue("ADR", adr);                       
+                        cmd.ExecuteNonQuery();
+                        DeleteExistingCart(userId, con, tran);
+                        tran.Commit();
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                    throw ex;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public List<Order> GetOrderList(int userId)
+        {
+            List<Order> list = new List<Order>();   
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                con.Open();
+                try
+                {
+                    using (SqlTransaction tran = con.BeginTransaction())
+                    {
+
+                        string query = "SELECT * FROM ORDERVIEW WHERE USER_ID = @USERID";
+                        SqlCommand cmd = new SqlCommand(query, con, tran);
+                        cmd.Parameters.AddWithValue("USERID", userId);
+                        SqlDataReader dr = cmd.ExecuteReader();
+                        while (dr.Read())
+                        {
+                            list.Add(new Order
+                            {
+                                id = Int32.Parse(dr["ID"].ToString()),                             
+                                user_id = Int32.Parse(dr["user_id"].ToString()),
+                                order_status_id = Int32.Parse(dr["ORDER_STATUS_ID"].ToString()),
+                                order_date = DateTime.Parse(dr["ORDER_DATE"].ToString()),
+                                order_status = dr["status"].ToString()
+                            });
+                        }
+                        tran.Commit();
+                    }
+                    return list;
+                }
+                catch (Exception ex)
+                {
+                    return list;
+                    throw ex;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
+
     }
 }

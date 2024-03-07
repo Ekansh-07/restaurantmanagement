@@ -3,7 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="Script" runat="server">
     <style>
         #addMore, #addAdrs {
-            margin:20px;
+            margin: 20px;
             width: 150px;
         }
 
@@ -12,10 +12,11 @@
             background: none;
             width: 100px;
         }
-        #orderCharges{
-            margin-top : 50px;
-            display:flex; 
-            flex-direction:column;
+
+        #orderCharges {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
         }
 
         #customToast {
@@ -30,10 +31,25 @@
             border-radius: 5px;
             z-index: 9999;
         }
-       
+
+        #payBtn {
+            margin-top:10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            #payBtn:hover {
+                background-color: #0056b3;
+            }
     </style>
     <script>
-        netBill = {}
+        netBill = {}, orderDetails = {};
         function makeTable() {
             $("#orderTable").bootstrapTable({
                 classes: 'table table-borderless',
@@ -98,7 +114,7 @@
         function loadTable() {
             console.log(userSessionInfo.userId);
             $.ajax({
-                url: '../WS2.asmx/GetUserOrder',
+                url: '../WS2.asmx/GetUserCartDetails',
                 type: "POST",
                 contentType: 'application/json;charset=utf-8',
                 dataType: "json",
@@ -111,11 +127,12 @@
                     });
                     if (menuList.length == 0)
                         window.location.href = "/Customers/CustomerMenu.aspx";
+                    orderDetails.order = menuList; 
                     $("#orderTable").bootstrapTable('load', menuList);
                     calNetPayable();
                     let temp = "Total amount to be paid :" + new Intl.NumberFormat('en-IN', {
                         style: 'currency', currency: 'INR'
-                    }).format( netBill.Total);
+                    }).format(netBill.Total);
                     console.log(temp);
                     $("#totalPayment").text(temp);
                 }
@@ -130,13 +147,13 @@
         function calTotalPrice(data) {
             let net = 0;
             data.forEach((d) => net += (d.price * d.qty))
-           netBill.cost = net;
+            netBill.cost = net;
             return net;
-        }       
+        }
         function calNetPayable() {
 
             netBill.gst = netBill.cost * 0.05;
-            netBill.delivery = netBill.cost >1000?0:20;
+            netBill.delivery = netBill.cost > 1000 ? 0 : 20;
             netBill.Total = netBill.gst + netBill.cost + netBill.delivery;
             let formatter = new Intl.NumberFormat('en-IN', {
                 style: 'currency', currency: 'INR'
@@ -145,7 +162,7 @@
             $("#orderDetailsPriceInput").val(formatter.format(netBill.cost));
             $("#orderDetailsGstChargesInput").val(formatter.format(netBill.gst));
             $("#orderDetailsDeliveryChargesInput").val(formatter.format(netBill.delivery));
-            $("#orderDetailsTotalAmountInput").val(formatter.format(netBill.Total)); 
+            $("#orderDetailsTotalAmountInput").val(formatter.format(netBill.Total));
         }
         function handleCartUpdate(dishId, qty) {
 
@@ -191,6 +208,7 @@
 
         function setAddress(idx) {
             let row = $("#addressTable").bootstrapTable('getData')[idx];
+            orderDetails.adrsId = idx;
             $("#selectedAddress").html(row.address);
         }
         function addrBtn(val, row, idx) {
@@ -199,11 +217,34 @@
 
 
         }
-        
+
+        function handlePayment() {
+            let adrs = $("#selectedAddress").html();
+            if (adrs == null || adrs == '')
+                displayMsg("Select the address");
+            else
+            {
+                orderDetails.bill = netBill;
+                orderDetails.adrs = adrs;
+                dataJson = JSON.stringify(orderDetails);
+                $.ajax({
+                    url: '../WS3.asmx/InitiatePayment',
+                    type: "POST",
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: "json",
+                    data: JSON.stringify({ cost: dataJson }),
+                    success: function (res) {
+                        window.location.href = res.d;                        
+                    }
+                })
+            }
+
+        }
+
 
         $(document).ready(function () {
             makeTable();
-           loadTable();
+            loadTable();
             loadAddress();
             $("#addMore").on('click', () => {
                 window.location.href = "/Customers/CustomerMenu.aspx";
@@ -233,8 +274,8 @@
         </table>
         <button type="button" class="btn btn-secondary" id="addMore">Add More Items </button>
     </div>
-   <%--Address Display--%>
-  <%--  <div class="row d-flex align-items-center justify-content-center">
+    <%--Address Display--%>
+    <%--  <div class="row d-flex align-items-center justify-content-center">
         <h3>Select Address:</h3>
         <div id="adrsContainer">
         </div>
@@ -243,88 +284,86 @@
 
     <%--Order Cost--%>
     <div class="cont">
-     <div class="card">
-         <div class="card-header">
-             <h5>Order Details</h5>
-         </div>
-         <div class="card-body">
-             <div class="row">
-                 <div class="col-sm-5">
-                     <label class= "form-group">Total price</label>
-                 </div>
-                 <div class="col-sm-7">
-                     <input value= ""  id="orderDetailsPriceInput" class="orderDetailsInput" disabled/>
-                 </div>
-             </div>
-             <div class="row">
-                 <div class="col-sm-5">
-                     <label class="form-group">Gst Charges(5%)</label>
-                 </div>
-                 <div class="col-sm-7">
-                     <input value="" id="orderDetailsGstChargesInput" class="orderDetailsInput" disabled />
-                 </div>
-             </div>
-             <div class="row">
-                 <div class="col-sm-5">
-                     <label class="form-group">Delivery Charges(Free Delivery with minimum order of Rs 1000)</label>
-                 </div>
-                 <div class="col-sm-7">
-                     <input value="" id="orderDetailsDeliveryChargesInput" class="orderDetailsInput" disabled />
-                 </div>
-             </div>
-             <div class="row">
-                 <div class="col-sm-5">
-                     <label class="form-group">Amount to Pay</label>
-                 </div>
-                 <div class="col-sm-7">
-                     <input value="" id="orderDetailsTotalAmountInput" class="orderDetailsInput" disabled />
-                 </div>
-             </div>
-             <div class="row">
-                 <div class="col-sm-5">
-                     <button type="button" class="btn-xs btn-primary" data-toggle="modal" data-target="#addressSelectionModal" id="addressSelectBtn">Proceed to address selection </button>
-                 </div>
-                 <div class="col-sm-7">
-                     <textarea id="selectedAddress" class="orderDetailsInput"></textarea>
-                 </div>
-             </div>
-         </div>
-     </div>
- </div>
-    <%--Payment Methods--%>
-    <div class="row">
-
-    </div>
-    <%--Address Modal--%>
-    <div class="modal fade" id="addressSelectionModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="">Select Address</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        <div class="card">
+            <div class="card-header">
+                <h5>Order Details</h5>
             </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="" id="addressTable" data-toggle="table">
-                        <thead>
-                            <tr>
-                                <th data-field ="address"></th>
-                                <th data-field ="btn" data-formatter ="addrBtn">                
-                                   
-                                </th>
-                            </tr>
-                        </thead>
-                    </table>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label class="form-group">Total price</label>
+                    </div>
+                    <div class="col-sm-7">
+                        <input value="" id="orderDetailsPriceInput" class="orderDetailsInput" disabled />
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#addressModal" id="addAdrs">Add new address</button>
-                
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label class="form-group">Gst Charges(5%)</label>
+                    </div>
+                    <div class="col-sm-7">
+                        <input value="" id="orderDetailsGstChargesInput" class="orderDetailsInput" disabled />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label class="form-group">Delivery Charges(Free Delivery with minimum order of Rs 1000)</label>
+                    </div>
+                    <div class="col-sm-7">
+                        <input value="" id="orderDetailsDeliveryChargesInput" class="orderDetailsInput" disabled />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label class="form-group">Amount to Pay</label>
+                    </div>
+                    <div class="col-sm-7">
+                        <input value="" id="orderDetailsTotalAmountInput" class="orderDetailsInput" disabled />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <button type="button" class="btn-xs btn-primary" data-toggle="modal" data-target="#addressSelectionModal" id="addressSelectBtn">Proceed to address selection </button>
+                    </div>
+                    <div class="col-sm-7">
+                        <textarea id="selectedAddress" class="orderDetailsInput"></textarea>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <%--Payment Methods--%>
+    <div class="row">
+        <button type="button" id="payBtn" class="btn btn-primary btn-lg" onclick="handlePayment()">Pay Using Paypal</button>
+    </div>
+    <%--Address Modal--%>
+    <div class="modal fade" id="addressSelectionModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="">Select Address</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="" id="addressTable" data-toggle="table">
+                            <thead>
+                                <tr>
+                                    <th data-field="address"></th>
+                                    <th data-field="btn" data-formatter="addrBtn"></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#addressModal" id="addAdrs">Add new address</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </asp:Content>
