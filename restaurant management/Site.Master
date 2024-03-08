@@ -156,7 +156,7 @@
                         <li><a href="../Customers/Profile.aspx">Profile</a></li>
                         <%} %>
                         <li id="menuItem"><a id="menuLink">Menu</a></li>
-
+                        <li><a href="/Customers/OrderDetails.aspx">Orders</a></li>
 
                     </ul>
                 </div>

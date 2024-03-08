@@ -66,6 +66,9 @@ namespace restaurant_management.Modal
         public DateTime order_date { get; set; }
         public int order_status_id { get; set; }
         public string order_status { get; set; }
+        public int address_id { get; set; }
+        public string address { get; set; }
+        public int order_cost { get; set; }
     }
 
     public class Order_Mapping
@@ -78,9 +81,12 @@ namespace restaurant_management.Modal
     public class Order_Items
     {
         public int id { get; set; }
+        public string name {  get; set; }
         public int order_id { get; set; }
         public int item_id { get; set; }
         public int qty { get; set; }
+        public int cost { get; set; }
+
     }
 
     public class Modal

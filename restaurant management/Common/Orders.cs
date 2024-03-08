@@ -233,17 +233,21 @@ namespace restaurant_management.Common
                         string query = "SELECT * FROM ORDERVIEW WHERE USER_ID = @USERID";
                         SqlCommand cmd = new SqlCommand(query, con, tran);
                         cmd.Parameters.AddWithValue("USERID", userId);
-                        SqlDataReader dr = cmd.ExecuteReader();
-                        while (dr.Read())
+                        using (SqlDataReader dr = cmd.ExecuteReader())
                         {
-                            list.Add(new Order
+                            while (dr.Read())
                             {
-                                id = Int32.Parse(dr["ID"].ToString()),                             
-                                user_id = Int32.Parse(dr["user_id"].ToString()),
-                                order_status_id = Int32.Parse(dr["ORDER_STATUS_ID"].ToString()),
-                                order_date = DateTime.Parse(dr["ORDER_DATE"].ToString()),
-                                order_status = dr["status"].ToString()
-                            });
+                                list.Add(new Order
+                                {
+                                    id = Int32.Parse(dr["ID"].ToString()),
+                                    user_id = Int32.Parse(dr["USER_ID"].ToString()),
+                                    order_status_id = Int32.Parse(dr["ORDER_STATUS_ID"].ToString()),
+                                    order_date = DateTime.Parse(dr["ORDER_DATE"].ToString()),
+                                    order_status = dr["STATUS"].ToString(),
+                                    address = dr["ADDRESS"].ToString(),
+                                    order_cost = int.Parse(dr["ORDER_COST"].ToString())
+                                });
+                            }
                         }
                         tran.Commit();
                     }
@@ -260,6 +264,52 @@ namespace restaurant_management.Common
                 }
             }
         }
+        public List<Order_Items> GetOrderItemList(int userId)
+        {
+            List<Order_Items> list = new List<Order_Items>();
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                con.Open();
+                try
+                {
+                    using (SqlTransaction tran = con.BeginTransaction())
+                    {
 
+                        string query = @"SELECT o.id,m.name,order_id,item_id,quantity, quantity * m.PRICE as cost  
+                                        FROM TBL_order_items o, TBL_MENU m 
+                                        where o.item_id = m.ID 
+										and o.order_id in (SELECT id from tbl_orders where user_id = @userid)  ";
+                        SqlCommand cmd = new SqlCommand(query, con, tran);
+                        cmd.Parameters.AddWithValue("userid", userId);
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                list.Add(new Order_Items
+                                {
+                                    id = Int32.Parse(dr["ID"].ToString()),
+                                    name = dr["Name"].ToString(),
+                                    order_id = Int32.Parse(dr["ORDER_ID"].ToString()),
+                                    item_id = Int32.Parse(dr["ITEM_ID"].ToString()),
+                                    qty = Int32.Parse(dr["QUANTITY"].ToString()),                                
+                                    cost = int.Parse(dr["COST"].ToString())
+                                });
+                            }
+                        }
+                        tran.Commit();
+                    }
+                    return list;
+                }
+                catch (Exception ex)
+                {
+                    return list;
+                    throw ex;
+                }
+                finally
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }

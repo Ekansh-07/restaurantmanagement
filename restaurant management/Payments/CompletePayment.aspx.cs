@@ -24,13 +24,14 @@ namespace restaurant_management.Payments
                     id = paymentId
                 };
                 var adrId =int.Parse(Request.QueryString["adrs"].ToString());
-                var cost = int.Parse(Request.QueryString["cost"].ToString());
+                var cost = Double.Parse(Request.QueryString["cost"].ToString());
                 var payerId = Request.QueryString["payerID"].ToString();
+               
                 var payExecute = new PaymentExecution() { payer_id = payerId };
                 var result = payment.Execute(apiContext, payExecute);
-                var res = new Orders().PlaceOrder(SiteMaster.ud.Id,cost,adrId); 
+                var res = new Orders().PlaceOrder(SiteMaster.ud.Id,(int)cost,adrId); 
                 if(res)
-                    Response.Redirect("/Customers/CustomerOrder.aspx");
+                    Response.Redirect("/Customers/OrderDetails.aspx");
             }
         }
     

@@ -52,9 +52,15 @@ namespace restaurant_management
 
         [WebMethod]
 
-        public bool PlaceOrder(int userId)
+        public string GetOrderList(int curUser)
         {
-            return orderOb.PlaceOrder(userId);
+            return JsonConvert.SerializeObject(orderOb.GetOrderList(curUser));
+        }
+
+        [WebMethod]
+        public string GetOrderItemList(int userId)
+        {
+            return JsonConvert.SerializeObject(orderOb.GetOrderItemList(userId));
         }
     }
 }

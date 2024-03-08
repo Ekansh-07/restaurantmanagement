@@ -208,7 +208,7 @@
 
         function setAddress(idx) {
             let row = $("#addressTable").bootstrapTable('getData')[idx];
-            orderDetails.adrsId = idx;
+            orderDetails.adrsId = row.id;
             $("#selectedAddress").html(row.address);
         }
         function addrBtn(val, row, idx) {
