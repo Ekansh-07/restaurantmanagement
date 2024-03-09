@@ -4,6 +4,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
         .userp {
             padding: 2vh;
             margin-left: auto;
@@ -64,7 +70,7 @@
                 $("#addresscontainer").hide();
                 $("#updatePwd").hide();
             });
-            
+
             $("#addressOption").on("click", () => {
                 $("#addresscontainer").show();
                 $("#basicdetails").hide();
@@ -83,19 +89,19 @@
                 let oldPwd = $('#editPwd').val();
                 let newPwd = $('#editNewPwd').val();
                 let cnfPwd = $('#cnfNewPwd').val();
-                let msgBox = $('#msgBox'); 
+                let msgBox = $('#msgBox');
                 if (oldPwd == '' || newPwd == '' || cnfPwd == '') {
-                    msgBox.text('Empty fields are not allowed');                  
+                    msgBox.text('Empty fields are not allowed');
                 }
                 else if (newPwd != cnfPwd) {
                     msgBox.text('New Password and Confirm Password are not same');
                 }
                 data = {
-                    oldPwd: oldPwd, 
+                    oldPwd: oldPwd,
                     newPwd: newPwd,
                     email: userSessionInfo.email
                 }
-                dataJson = JSON.stringify(data); 
+                dataJson = JSON.stringify(data);
                 $.ajax({
                     url: '../WS.asmx/SetUserPwd',
                     type: "POST",
@@ -106,7 +112,7 @@
                         if (res.d)
                             msgBox.text('Password Updated Successfully');
                         else {
-                            msgBox.text('Wrong Password Entered'); 
+                            msgBox.text('Wrong Password Entered');
                         }
                     }
                 })
@@ -118,25 +124,40 @@
             $("#editbtn").on('click', () => {
                 $("#editfname").removeAttr('disabled');
                 $("#editlname").removeAttr('disabled');
-                $("#editcontact").removeAttr('disabled');     
+                $("#editcontact").removeAttr('disabled');
                 $("#editbtn").hide();
                 $("#savebtn").show();
             })
 
             $("#savebtn").on('click', () => {
-               $fname =  $("#editfname");
-               $lname = $("#editlname");
-               $phone = $("#editcontact");
+                $fname = $("#editfname");
+                $lname = $("#editlname");
+                $phone = $("#editcontact");
+
                 data = {
+                    id: userSessionInfo.userId,
                     fname: $fname.val(),
                     lname: $lname.val(),
                     phone: $phone.val()
                 }
 
-                dataJson = JSON.stringify(data); 
-
-                $("#editbtn").hide();
-                $("#savebtn").show();
+                dataJson = JSON.stringify(data);
+                $.ajax({
+                    url: '../WS.asmx/UpdateUserDetails',
+                    type: "POST",
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: "json",
+                    data: JSON.stringify({ UserDetails: dataJson }),
+                    success: function (res) {
+                        displayMsg("Details updated successfully");
+                        loadUserData();
+                    }
+                })
+                $fname.attr('disabled', true); 
+                $lname.attr('disabled', true); 
+                $phone.attr('disabled', true); 
+                $("#editbtn").show();
+                $("#savebtn").hide();
             })
         })
 
@@ -185,11 +206,11 @@
                 dataType: "json",
                 data: JSON.stringify({ id: userSessionInfo.userId }),
                 success: function (res) {
-                    console.log(res); 
-                    data = JSON.parse(res.d); 
+                    data = JSON.parse(res.d);
+                    console.log(data);
                     $("#editfname").val(data.fname);
                     $("#editlname").val(data.lname);
-                    $("#editcontact").val(data.phone);
+                    $("#editcontact").val(JSON.parse(data.phone));
                 }
             })
         }
@@ -312,43 +333,43 @@
                 </div>
                 <div class="form-group">
                     <label for="editContact" class="form-label">Contact details</label>
-                    <input class="form-control edit" id="editcontact" type="tel" value="" placeholder="Phone Number" disabled />
+                    <input class="form-control edit" id="editcontact" type="number" value="" placeholder="Phone Number" disabled />
                 </div>
 
                 <div class="form-group">
                     <button type="button" class="btn btn-primary" id="editbtn">Edit Details</button>
-                    <button type="button" class="btn btn-success" id="savebtn"  style="display:none">Save</button>
+                    <button type="button" class="btn btn-success" id="savebtn" style="display: none">Save</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="card-container" id="updatePwd" style="display: none">
-    <h2>Change Password</h2>
-    <div class="form">
-        <div class="row">
+        <h2>Change Password</h2>
+        <div class="form">
+            <div class="row">
 
-            <div class="form-group">
-                <label for="editfname" class="form-label">Old Password</label>
-                <input class="form-control edit" id="editPwd" type="password"  />
-            </div>
-            <div class="form-group">
-                <label for="editlname" class="form-label">New Password</label>
-                <input class="form-control edit" id="editNewPwd" type="password"  />
-            </div>
-            <div class="form-group">
-                <label for="editContact" class="form-label">Confirm Password</label>
-                <input class="form-control edit" id="cnfNewPwd" type="password" value=""/>
-            </div>
+                <div class="form-group">
+                    <label for="editfname" class="form-label">Old Password</label>
+                    <input class="form-control edit" id="editPwd" type="password" />
+                </div>
+                <div class="form-group">
+                    <label for="editlname" class="form-label">New Password</label>
+                    <input class="form-control edit" id="editNewPwd" type="password" />
+                </div>
+                <div class="form-group">
+                    <label for="editContact" class="form-label">Confirm Password</label>
+                    <input class="form-control edit" id="cnfNewPwd" type="password" value="" />
+                </div>
 
-            <div class="form-group">
-                <button type="button" class="btn btn-primary" id="pwdBtn">Submit</button>
-                <a href="/Admin/ForgetPassword.aspx">Forget Password?</a>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" id="pwdBtn">Submit</button>
+                    <a href="/Admin/ForgetPassword.aspx">Forget Password?</a>
+                </div>
             </div>
         </div>
-    </div>
         <div id="msgBox"></div>
-</div>
+    </div>
 
     <div class="container" id="addresscontainer" style="display: none">
         <h2>Saved Addresses</h2>

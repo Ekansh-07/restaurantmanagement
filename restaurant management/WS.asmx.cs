@@ -53,6 +53,13 @@ namespace restaurant_management
         }
 
         [WebMethod]
+        public void UpdateUserDetails(string UserDetails)
+        {
+            User user = JsonConvert.DeserializeObject<User>(UserDetails);
+            com.UpdateUserDetails(user);
+        }
+
+        [WebMethod]
 
         public string UserData(int id)
         {
@@ -72,10 +79,10 @@ namespace restaurant_management
         }
 
         [WebMethod]
-        public bool UpdateUsersData(string userDetail)
+        public bool AssignRole(string userDetail)
         {
             User user = JsonConvert.DeserializeObject<User>(userDetail);
-            return com.UpdateUsersData(user);
+            return com.AssignRole(user);
         }
         [WebMethod]
 

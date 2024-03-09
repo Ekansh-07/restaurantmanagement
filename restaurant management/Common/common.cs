@@ -156,11 +156,12 @@ namespace restaurant_management.Common
         {
             try
             {
-                string query = "INSERT INTO TBL_USERS(FNAME,LNAME,EMAIL) VALUES(@FNAME,@LNAME,@EMAIL)";
+                string query = "INSERT INTO TBL_USERS(FNAME,LNAME,EMAIL,WALLET) VALUES(@FNAME,@LNAME,@EMAIL,@WALLET)";
                 SqlCommand cmd = new SqlCommand(query, con, trans);
                 cmd.Parameters.AddWithValue("FNAME", user.fname);
                 cmd.Parameters.AddWithValue("LNAME", user.lname);
                 cmd.Parameters.AddWithValue("EMAIL", user.email);
+                cmd.Parameters.AddWithValue("WALLET", 0);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex) { }
@@ -267,22 +268,22 @@ namespace restaurant_management.Common
                 CON.Open();
                 using (SqlTransaction trans = CON.BeginTransaction())
                 {
-                    string query = "SELECT U.ID,FNAME,LNAME,EMAIL,PHONE_NUMBER,R.ROLE_NAME AS ROLE, R.ID AS ROLE_ID FROM TBL_USERS U LEFT JOIN TBL_ROLE AS R ON R.ID = U.ROLE_ID";
+                    string query = "SELECT U.ID,FNAME,LNAME,EMAIL,PHONE_NUMBER,R.ROLE_NAME AS ROLE, R.ID AS ROLE_ID,WALLET FROM TBL_USERS U LEFT JOIN TBL_ROLE AS R ON R.ID = U.ROLE_ID";
                     SqlCommand cmd = new SqlCommand(query, CON, trans);
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
-
                             UserDetail userDetail = new UserDetail
                             {
                                 Id = Int32.Parse(dr["id"].ToString()),
                                 fname = dr["fname"].ToString(),
                                 lname = dr["lname"].ToString(),
+                                phone = dr.IsDBNull(4) ? "" : (dr["phone_number"].ToString()),
                                 role = dr.IsDBNull(5) ? "Unassigned" : (dr["role"].ToString()),
                                 email = dr["email"].ToString(),
                                 roleId = dr.IsDBNull(6) ? 0 : Int32.Parse(dr["role_id"].ToString()),
-
+                                wallet = int.Parse(dr["wallet"].ToString())
                             };
                             list.Add(userDetail);
                         }
@@ -291,6 +292,33 @@ namespace restaurant_management.Common
                 }
             }
             return list;
+        }
+
+        public void UpdateUserDetails(User user)
+        {
+            using (SqlConnection con = new SqlConnection(strcon))
+            {
+                con.Open();
+                try
+                {
+                    using (SqlTransaction trans = con.BeginTransaction())
+                    {
+                        string query = "UPDATE TBL_USERS SET FNAME =@FNAME,LNAME=@LNAME,PHONE_NUMBER=@CONTACT WHERE ID = @ID";
+                        SqlCommand cmd = new SqlCommand(query, con, trans);
+                        cmd.Parameters.AddWithValue("FNAME", user.fname);
+                        cmd.Parameters.AddWithValue("LNAME", user.lname);
+                        cmd.Parameters.AddWithValue("CONTACT", user.phone);
+                        cmd.Parameters.AddWithValue("ID", user.Id);
+                        cmd.ExecuteNonQuery();
+                        trans.Commit();
+                    }
+                }
+                catch (Exception ex) {  }
+                finally
+                {
+                    con.Close();
+                }
+            }
         }
 
         public List<Role> GetRoles()
@@ -321,7 +349,7 @@ namespace restaurant_management.Common
             return list;
         }
 
-        public bool UpdateUsersData(User user)
+        public bool AssignRole(User user)
         {
             using (SqlConnection con = new SqlConnection(strcon))
             {

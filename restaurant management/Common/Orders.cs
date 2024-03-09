@@ -1,4 +1,5 @@
-﻿using restaurant_management.Modal;
+﻿using Microsoft.Ajax.Utilities;
+using restaurant_management.Modal;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -275,7 +276,7 @@ namespace restaurant_management.Common
                     using (SqlTransaction tran = con.BeginTransaction())
                     {
 
-                        string query = @"SELECT o.id,m.name,order_id,item_id,quantity, quantity * m.PRICE as cost  
+                        string query = @"SELECT o.id,m.name,order_id,item_id,quantity, quantity * m.PRICE as cost, o.status_id  
                                         FROM TBL_order_items o, TBL_MENU m 
                                         where o.item_id = m.ID 
 										and o.order_id in (SELECT id from tbl_orders where user_id = @userid)  ";
@@ -292,7 +293,9 @@ namespace restaurant_management.Common
                                     order_id = Int32.Parse(dr["ORDER_ID"].ToString()),
                                     item_id = Int32.Parse(dr["ITEM_ID"].ToString()),
                                     qty = Int32.Parse(dr["QUANTITY"].ToString()),                                
-                                    cost = int.Parse(dr["COST"].ToString())
+                                    cost = int.Parse(dr["COST"].ToString()),
+                                    status_id = dr["status_id"] == DBNull.Value ? 0 : Int32.Parse(dr["status_id"].ToString())
+
                                 });
                             }
                         }

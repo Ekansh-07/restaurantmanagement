@@ -29,7 +29,7 @@ namespace restaurant_management
                 Session["roleId"] = roleId;
                 Session["email"] = email;
                 ud = new common().GetUserData(email);
-
+                Console.WriteLine(ud);
             }
         }
 

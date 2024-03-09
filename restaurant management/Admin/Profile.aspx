@@ -115,7 +115,7 @@
                     UserInfoJSON = JSON.stringify(UserInfo);
                     $.ajax({
                         type: 'POST',
-                        url: '/WS.asmx/UpdateUsersData',
+                        url: '/WS.asmx/AssignRole',
                         contentType: 'application/json; charset=utf-8',
                         data: JSON.stringify({ userDetail: UserInfoJSON }),
                         dataType: 'json',

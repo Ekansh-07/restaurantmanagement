@@ -13,6 +13,8 @@ namespace restaurant_management.Modal
         public string email { get; set; }
         public string phone { get; set; }
         public int roleId { get; set; }
+        public int wallet { get; set; }
+
     }
 
     public class UserDetail : User
@@ -86,7 +88,7 @@ namespace restaurant_management.Modal
         public int item_id { get; set; }
         public int qty { get; set; }
         public int cost { get; set; }
-
+        public int status_id { get; set; }
     }
 
     public class Modal

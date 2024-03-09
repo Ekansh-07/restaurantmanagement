@@ -3,6 +3,7 @@ using restaurant_management.Common;
 using restaurant_management.Modal;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
@@ -21,6 +22,7 @@ namespace restaurant_management
     {
 
         Orders orderOb = new Orders();
+        PaypalHandler paymentHandler = new PaypalHandler();
         [WebMethod]
         public bool MapOrders(string cart)
         {
@@ -61,6 +63,16 @@ namespace restaurant_management
         public string GetOrderItemList(int userId)
         {
             return JsonConvert.SerializeObject(orderOb.GetOrderItemList(userId));
+        }
+
+        [WebMethod]
+
+        public void InitiateRefund(string ob)
+        {
+            dynamic d = new ExpandoObject();
+            d =  JsonConvert.DeserializeObject(ob);
+            paymentHandler.InitiateRefund(d);
+           
         }
     }
 }

@@ -39,10 +39,10 @@
         }
 
         .message-box {
-            position:absolute; 
-            top:20%;
-            left:50%;
-            transform:translate(-50%,-60%);
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%,-60%);
             background-color: white;
             color: #4CAF50;
             padding: 20px;
@@ -50,8 +50,8 @@
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
             min-width: 400px;
             text-align: center;
-            z-index:9999;
-            display:none;
+            z-index: 9999;
+            display: none;
         }
 
         #content {
@@ -84,7 +84,7 @@
     </style>
     <script>
         $(document).ready(function () {
-            
+
             userSessionInfo = {
                 userId: 0,
                 roleId: 0,
@@ -96,6 +96,7 @@
             userSessionInfo.roleId = '<%=restaurant_management.SiteMaster.ud.roleId %>'
             userSessionInfo.email = '<%=restaurant_management.SiteMaster.ud.email %>'
             $("#u_email").text("Welcome, " + '<%=restaurant_management.SiteMaster.ud.email %>')
+            $("#wallet").text('<%=restaurant_management.SiteMaster.ud.wallet %>')
             ' <%}
         else
         {%>'
@@ -110,7 +111,6 @@
                 else
                     $("#menuLink").attr('href', '/Admin/Menu.aspx');
             })
-
         })
 
     </script>
@@ -131,8 +131,12 @@
                         <li class="nav-item">
                             <span class="nav-link" id="u_email"></span>
                         </li>
-                        <li class="nav-item pe-5">
+                        <li class="nav-item pe-1">
                             <asp:Button type="button" ID="logoutBtn" class="btn btn-danger" runat="server" Text="Logout" OnClick="logout_click" />
+                        </li>
+                        <li class="nav-item pe-2">
+                            <i class="fa-solid fa-wallet" style="color: #98b5e7; font-size:30px"></i>
+                            <span class="nav-link" id="wallet"></span>
                         </li>
                     </ul>
                 </div>
@@ -166,7 +170,7 @@
         </nav>
 
         <main id="content">
-            <div class="message-box"> </div>
+            <div class="message-box"></div>
             <div class="container body-content">
                 <asp:ContentPlaceHolder ID="MainContent" runat="server">
                 </asp:ContentPlaceHolder>
