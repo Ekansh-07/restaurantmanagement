@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="Admin\AdminOrder.aspx" />
     <Content Include="Admin\ForgetPassword.aspx" />
     <Content Include="Admin\Login.aspx" />
     <Content Include="Admin\Profile.aspx" />
@@ -135,10 +136,12 @@
     <Content Include="Customers\CustomerOrder.aspx" />
     <Content Include="Customers\OrderDetails.aspx" />
     <Content Include="Customers\Profile.aspx" />
-    <Content Include="Default.aspx" />
     <Content Include="EmailFunctionality.asmx" />
+    <Content Include="Error.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Home.aspx" />
+    <Content Include="images\homebg.jpg" />
     <Content Include="images\user.png" />
     <Content Include="Admin\Menu.aspx" />
     <Content Include="Payments\CompletePayment.aspx" />
@@ -170,7 +173,7 @@
     <Content Include="Content\bootstrap-grid.rtl.css.map" />
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
-    <Content Include="signup.jpg" />
+    <Content Include="images\signup.jpg" />
     <Content Include="temporary.aspx" />
     <Content Include="WS.asmx" />
     <Content Include="WS2.asmx" />
@@ -210,6 +213,13 @@
     <Content Include="Site.Mobile.Master" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Admin\AdminOrder.aspx.cs">
+      <DependentUpon>AdminOrder.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdminOrder.aspx.designer.cs">
+      <DependentUpon>AdminOrder.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\ForgetPassword.aspx.cs">
       <DependentUpon>ForgetPassword.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -294,16 +304,16 @@
     <Compile Include="Customers\Profile.aspx.designer.cs">
       <DependentUpon>Profile.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Default.aspx.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Default.aspx.designer.cs">
-      <DependentUpon>Default.aspx</DependentUpon>
-    </Compile>
     <Compile Include="EmailFunctionality.asmx.cs">
       <DependentUpon>EmailFunctionality.asmx</DependentUpon>
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -314,6 +324,13 @@
     </Compile>
     <Compile Include="Admin\Menu.aspx.designer.cs">
       <DependentUpon>Menu.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Home.aspx.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Home.aspx.designer.cs">
+      <DependentUpon>Home.aspx</DependentUpon>
     </Compile>
     <Compile Include="Modal\Modal.cs" />
     <Compile Include="Payments\CompletePayment.aspx.cs">

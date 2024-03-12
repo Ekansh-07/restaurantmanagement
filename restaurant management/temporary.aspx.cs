@@ -47,7 +47,7 @@ namespace restaurant_management
                     PaypalHandler ob = new PaypalHandler();
                     int userId = Int32.Parse(query["userId"]);
                     int itemId = Int32.Parse(query["itemId"]);
-                    int cost = Int32.Parse(query["cost"]);
+                    double cost = double.Parse(query["cost"]);
                     if (Boolean.Parse(query["isValidRefund"]))
                     {
                         ob.UpdateUserWallet(userId, cost);

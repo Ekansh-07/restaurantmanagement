@@ -20,11 +20,6 @@ namespace restaurant_management
     public class WS3 : System.Web.Services.WebService
     {
         PaypalHandler handler = new PaypalHandler();
-        [WebMethod]
-        public string HelloWorld()
-        {
-            return "Hello World";
-        }
 
         [WebMethod]
         public string InitiatePayment(string cost)

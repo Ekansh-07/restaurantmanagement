@@ -23,7 +23,7 @@ namespace restaurant_management.Common
             var ru = new RedirectUrls()
             {
                 cancel_url = "https://localhost:44389/",
-                return_url = $"https://localhost:44389/Payments/CompletePayment.aspx?cost={paymentDetails.bill.Total}&adrs={paymentDetails.adrsId}"
+                return_url = $"https://localhost:44389/Payments/CompletePayment.aspx?cost={paymentDetails.bill.total}&adrs={paymentDetails.adrsId}"
             };           
             var payer = new Payer() { payment_method = "paypal" };
             var tdetails = new Details()
@@ -36,7 +36,7 @@ namespace restaurant_management.Common
             Amount amount = new Amount()
             {
                 currency = "USD",
-                total = (paymentDetails.bill.Total/80).ToString("0.00")
+                total = (paymentDetails.bill.total/80).ToString("0.00")
             };
             transaction.amount = amount;
             var payment = new Payment()
@@ -58,7 +58,7 @@ namespace restaurant_management.Common
             return ""; 
         }
 
-        public bool UpdateUserWallet(int userId,int amt)
+        public bool UpdateUserWallet(int userId,double amt)
         {
             using (SqlConnection con = new SqlConnection(strcon))
             {

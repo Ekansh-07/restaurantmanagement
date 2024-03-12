@@ -167,7 +167,7 @@ namespace restaurant_management.Common
                                     id = Int32.Parse(dr["ID"].ToString()),
                                     name = dr["Name"].ToString(),
                                     description = dr["Description"].ToString(),
-                                    price = Int32.Parse(dr["PRICE"].ToString()),
+                                    price = double.Parse(dr["PRICE"].ToString()),
                                     category_id = Int32.Parse(dr["CATEGORY_ID"].ToString()),
                                     status_id = Int32.Parse(dr["STATUS_ID"].ToString()),
                                     image_url = dr["IMG_URL"].ToString(),

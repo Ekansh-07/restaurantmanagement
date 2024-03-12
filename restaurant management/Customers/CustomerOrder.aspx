@@ -33,7 +33,7 @@
         }
 
         #payBtn {
-            margin-top:10px;
+            margin-top: 10px;
             background-color: #007bff;
             color: #fff;
             border: none;
@@ -50,6 +50,13 @@
     </style>
     <script>
         netBill = {}, orderDetails = {};
+
+        function formatter(val) {
+            let formatter = new Intl.NumberFormat('en-IN', {
+                style: 'currency', currency: 'INR'
+            })
+            return formatter.format(val);
+        }
         function makeTable() {
             $("#orderTable").bootstrapTable({
                 classes: 'table table-borderless',
@@ -127,12 +134,12 @@
                     });
                     if (menuList.length == 0)
                         window.location.href = "/Customers/CustomerMenu.aspx";
-                    orderDetails.order = menuList; 
+                    orderDetails.order = menuList;
                     $("#orderTable").bootstrapTable('load', menuList);
                     calNetPayable();
                     let temp = "Total amount to be paid :" + new Intl.NumberFormat('en-IN', {
                         style: 'currency', currency: 'INR'
-                    }).format(netBill.Total);
+                    }).format(netBill.total);
                     console.log(temp);
                     $("#totalPayment").text(temp);
                 }
@@ -154,15 +161,13 @@
 
             netBill.gst = netBill.cost * 0.05;
             netBill.delivery = netBill.cost > 1000 ? 0 : 20;
-            netBill.Total = netBill.gst + netBill.cost + netBill.delivery;
-            let formatter = new Intl.NumberFormat('en-IN', {
-                style: 'currency', currency: 'INR'
-            })
+            netBill.total = netBill.gst + netBill.cost + netBill.delivery;
 
-            $("#orderDetailsPriceInput").val(formatter.format(netBill.cost));
-            $("#orderDetailsGstChargesInput").val(formatter.format(netBill.gst));
-            $("#orderDetailsDeliveryChargesInput").val(formatter.format(netBill.delivery));
-            $("#orderDetailsTotalAmountInput").val(formatter.format(netBill.Total));
+
+            $("#orderDetailsPriceInput").val(formatter(netBill.cost));
+            $("#orderDetailsGstChargesInput").val(formatter(netBill.gst));
+            $("#orderDetailsDeliveryChargesInput").val(formatter(netBill.delivery));
+            $("#orderDetailsTotalAmountInput").val(formatter(netBill.total));
         }
         function handleCartUpdate(dishId, qty) {
 
@@ -180,9 +185,8 @@
                 data: JSON.stringify({ curOrder: updatedOrderJSON }),
                 success: function (response) {
                     if (response.d) {
-                        loadTable();
-
                     }
+                    loadTable();
                 }
             })
         }
@@ -222,8 +226,26 @@
             let adrs = $("#selectedAddress").html();
             if (adrs == null || adrs == '')
                 displayMsg("Select the address");
-            else
-            {
+            else {
+                if (netBill.total == 0) {
+                    order = {
+                        user_id: userSessionInfo.userId,
+                        order_cost: parseFloat($("#discount").val().substr(1)),
+                        address_id: orderDetails.adrsId
+                    }
+                    orderJSON = JSON.stringify(order);
+                    $.ajax({
+                        url: '../WS2.asmx/PlaceOrder',
+                        type: "POST",
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: "json",
+                        data: JSON.stringify({ curOrder : orderJSON }),
+                        success: function (res) {
+                            window.location.href = "/Customers/OrderDetails.aspx";
+                        }
+                    })
+                }
+                else {
                 orderDetails.bill = netBill;
                 orderDetails.adrs = adrs;
                 dataJson = JSON.stringify(orderDetails);
@@ -234,13 +256,42 @@
                     dataType: "json",
                     data: JSON.stringify({ cost: dataJson }),
                     success: function (res) {
-                        window.location.href = res.d;                        
+                        window.location.href = res.d;
                     }
                 })
+                }
+            }
+        }
+
+        function handleDiscount() {
+            let total = netBill.total;
+            let $wallet = $("#wallet");
+            walletAmt = parseFloat($wallet.text());
+            if (($("#checkWallet").prop(':checked'))) {
+                if (walletAmt > total) {
+                    discount = total; 
+                    walletLeft = walletAmt - total;
+                    total = 0;
+                    $wallet.text(walletLeft);
+                }
+                else {
+                    discount = walletAmt; 
+                    total -= walletAmt;
+                    $wallet.text(0);
+                }
+                $("#discount").val(formatter(discount));
+                $("#orderDetailsTotalAmountInput").val(formatter(total));
+                netBill.total = total;
+            }
+            else {
+                discount = parseFloat($("#discount").val().substr(1));
+                $wallet.text(walletAmt + discount); 
+                total += discount; 
+                $("#orderDetailsTotalAmountInput").val(formatter(total));
+                netBill.total = total;
             }
 
         }
-
 
         $(document).ready(function () {
             makeTable();
@@ -255,9 +306,17 @@
             $("#addAdrs").on('click', () => {
                 window.location.href = "/Customers/Profile#address";
             })
-            $("#info").mouseover(function () {
-
-                calNetPayable();
+            $("#checkWallet").on('click', () => {
+                let $chk = $("#checkWallet");
+                if (!($chk.prop(':checked'))) {
+                    $chk.prop(':checked', true);
+                    $("#discount-container").show();
+                }
+                else {
+                    $chk.prop(':checked', false);
+                    $("#discount-container").hide();
+                }
+                 handleDiscount();
             })
         });
     </script>
@@ -313,12 +372,28 @@
                         <input value="" id="orderDetailsDeliveryChargesInput" class="orderDetailsInput" disabled />
                     </div>
                 </div>
+                <div class="row " id="discount-container" style ="display:none" >
+                    <div class="col-sm-5">
+                        <label class="form-group">Discount </label>
+                    </div>
+                    <div class="col-sm-7">
+                        <input value="" id="discount" class="orderDetailsInput" disabled />
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-sm-5">
                         <label class="form-group">Amount to Pay</label>
                     </div>
                     <div class="col-sm-7">
                         <input value="" id="orderDetailsTotalAmountInput" class="orderDetailsInput" disabled />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <label class="form-group">Check if wish to use the Wallet money</label>
+                    </div>
+                    <div class="col-sm-7">
+                        <input  id="checkWallet" class="orderDetailsInput" type="checkbox" disabled" />
                     </div>
                 </div>
                 <div class="row">
@@ -361,7 +436,6 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#addressModal" id="addAdrs">Add new address</button>
-
                 </div>
             </div>
         </div>

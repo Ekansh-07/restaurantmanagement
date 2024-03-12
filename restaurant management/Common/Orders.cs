@@ -3,9 +3,11 @@ using restaurant_management.Modal;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Hosting;
 using System.Xml.Linq;
 
 namespace restaurant_management.Common
@@ -18,35 +20,39 @@ namespace restaurant_management.Common
         {
             using (SqlConnection con = new SqlConnection(strcon))
             {
-                con.Open();
                 try
                 {
+                    con.Open();
                     using (SqlTransaction tran = con.BeginTransaction())
                     {
-                        DeleteExistingCart(mp.user_id, con, tran);
                         string query = "INSERT INTO TBL_ORDERMAPPING(USER_ID,DISH_ID,QUANTITY) VALUES(@USER,@ITEM,@QTY); ";
-                        Dictionary<int, int> items = mp.Items;
-                        foreach (var item in items)
+                        using (SqlCommand cmd = new SqlCommand(query, con, tran))
                         {
-                            SqlCommand cmd = new SqlCommand(query, con, tran);
-                            cmd.Parameters.AddWithValue("USER", mp.user_id);
-                            cmd.Parameters.AddWithValue("ITEM", item.Key);
-                            cmd.Parameters.AddWithValue("QTY", item.Value);
-                            cmd.ExecuteNonQuery();
-                        }
-                        tran.Commit();
-                    }
+                            cmd.Parameters.Add("@USER", SqlDbType.Int);
+                            cmd.Parameters.Add("@ITEM", SqlDbType.Int);
+                            cmd.Parameters.Add("@QTY", SqlDbType.Int);
 
+                            DeleteExistingCart(mp.user_id, con, tran);
+
+                            foreach (var item in mp.Items)
+                            {
+                                if (item.Value > 0)
+                                {
+                                    cmd.Parameters["@USER"].Value = mp.user_id;
+                                    cmd.Parameters["@ITEM"].Value = item.Key;
+                                    cmd.Parameters["@QTY"].Value = item.Value;
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            tran.Commit();
+                        }
+                    }
                     return true;
                 }
                 catch (Exception ex)
                 {
                     return false;
-                    throw ex;
-                }
-                finally
-                {
-                    con.Close();
                 }
             }
         }
@@ -93,44 +99,46 @@ namespace restaurant_management.Common
         {
             using (SqlConnection con = new SqlConnection(strcon))
             {
-                con.Open();
                 try
                 {
+                    con.Open();
                     using (SqlTransaction tran = con.BeginTransaction())
                     {
                         string query = "UPDATE TBL_ORDERMAPPING SET QUANTITY = @QTY WHERE USER_ID = @USER AND DISH_ID = @ITEM; ";
-                        Dictionary<int, int> items = mp.Items;
-                        foreach (var item in items)
+                        using (SqlCommand cmd = new SqlCommand(query, con, tran))
                         {
-                            SqlCommand cmd = new SqlCommand(query, con, tran);
-                            cmd.Parameters.AddWithValue("USER", mp.user_id);
-                            cmd.Parameters.AddWithValue("ITEM", item.Key);
-                            cmd.Parameters.AddWithValue("QTY", item.Value);
-                            cmd.ExecuteNonQuery();
-                        }
-                        tran.Commit();
-                    }
+                            cmd.Parameters.Add("@USER", SqlDbType.Int);
+                            cmd.Parameters.Add("@ITEM", SqlDbType.Int);
+                            cmd.Parameters.Add("@QTY", SqlDbType.Int);
 
+                            foreach (var item in mp.Items)
+                            {
+                                    cmd.Parameters["@USER"].Value = mp.user_id;
+                                    cmd.Parameters["@ITEM"].Value = item.Key;
+                                    cmd.Parameters["@QTY"].Value = item.Value;
+                                    cmd.ExecuteNonQuery();
+                            }
+                            DeleteExistingCart(mp.user_id, con, tran, true);
+                            tran.Commit();
+                        }
+                    }
                     return true;
                 }
                 catch (Exception ex)
                 {
                     return false;
-                    throw ex;
-                }
-                finally
-                {
-                    con.Close();
                 }
             }
         }
 
-        public bool DeleteExistingCart(int userId, SqlConnection con, SqlTransaction tran)
+        public bool DeleteExistingCart(int userId, SqlConnection con, SqlTransaction tran, bool hasEmpty = false)
         {
 
             try
             {
-                string query = "DELETE FROM TBL_ORDERMAPPING WHERE USER_ID = @USER";
+
+                string query ="DELETE FROM TBL_ORDERMAPPING WHERE USER_ID = @USER";
+                if (hasEmpty) { query += " AND QUANTITY = 0;";  }
                 SqlCommand cmd = new SqlCommand(query, con, tran);
                 cmd.Parameters.AddWithValue("USER", userId);
                 cmd.ExecuteNonQuery();
@@ -166,7 +174,7 @@ namespace restaurant_management.Common
                                     id = Int32.Parse(dr["ID"].ToString()),
                                     name = dr["Name"].ToString(),
                                     image_url = dr["IMG_URL"].ToString(),
-                                    price = Int32.Parse(dr["PRICE"].ToString()),
+                                    price = double.Parse(dr["PRICE"].ToString()),
                                     qty = Int32.Parse(dr["QUANTITY"].ToString()),
                                 };
                                 list.Add(recipe);
@@ -187,7 +195,7 @@ namespace restaurant_management.Common
             }
         }
 
-        public bool PlaceOrder(int userId,int cost,int adr)
+        public bool PlaceOrder(int userId,double cost,int adr)
         {
             using (SqlConnection con = new SqlConnection(strcon))
             {
@@ -220,7 +228,14 @@ namespace restaurant_management.Common
             }
         }
 
-        public List<Order> GetOrderList(int userId)
+        public List<Order> GetUserOrders(int userId)
+        {
+            List<Order> orders = new List<Order>(); 
+            orders = GetOrderList().Where(o => o.user_id == userId).ToList();
+            return orders;
+        }
+
+        public List<Order> GetOrderList()
         {
             List<Order> list = new List<Order>();   
             using (SqlConnection con = new SqlConnection(strcon))
@@ -231,9 +246,8 @@ namespace restaurant_management.Common
                     using (SqlTransaction tran = con.BeginTransaction())
                     {
 
-                        string query = "SELECT * FROM ORDERVIEW WHERE USER_ID = @USERID";
+                        string query = "SELECT * FROM ORDERVIEW";
                         SqlCommand cmd = new SqlCommand(query, con, tran);
-                        cmd.Parameters.AddWithValue("USERID", userId);
                         using (SqlDataReader dr = cmd.ExecuteReader())
                         {
                             while (dr.Read())
@@ -242,11 +256,12 @@ namespace restaurant_management.Common
                                 {
                                     id = Int32.Parse(dr["ID"].ToString()),
                                     user_id = Int32.Parse(dr["USER_ID"].ToString()),
+                                    name = dr["USER_NAME"].ToString(),
                                     order_status_id = Int32.Parse(dr["ORDER_STATUS_ID"].ToString()),
                                     order_date = DateTime.Parse(dr["ORDER_DATE"].ToString()),
                                     order_status = dr["STATUS"].ToString(),
                                     address = dr["ADDRESS"].ToString(),
-                                    order_cost = int.Parse(dr["ORDER_COST"].ToString())
+                                    order_cost = double.Parse(dr["ORDER_COST"].ToString())
                                 });
                             }
                         }
@@ -276,10 +291,13 @@ namespace restaurant_management.Common
                     using (SqlTransaction tran = con.BeginTransaction())
                     {
 
-                        string query = @"SELECT o.id,m.name,order_id,item_id,quantity, quantity * m.PRICE as cost, o.status_id  
-                                        FROM TBL_order_items o, TBL_MENU m 
-                                        where o.item_id = m.ID 
-										and o.order_id in (SELECT id from tbl_orders where user_id = @userid)  ";
+                        string query = @"SELECT o.id,m.name,order_id,item_id,quantity, quantity * m.PRICE as cost, o.status_id,status  
+                                        FROM TBL_order_items O
+                                        INNER JOIN TBL_MENU m 
+                                        ON M.ID = O.ITEM_ID
+                                        LEFT JOIN TBL_ORDER_STATUS s
+                                        ON  O.STATUS_ID = s.id
+                                        and o.order_id in (SELECT id from tbl_orders where user_id = @userid)  ";
                         SqlCommand cmd = new SqlCommand(query, con, tran);
                         cmd.Parameters.AddWithValue("userid", userId);
                         using (SqlDataReader dr = cmd.ExecuteReader())
@@ -293,9 +311,9 @@ namespace restaurant_management.Common
                                     order_id = Int32.Parse(dr["ORDER_ID"].ToString()),
                                     item_id = Int32.Parse(dr["ITEM_ID"].ToString()),
                                     qty = Int32.Parse(dr["QUANTITY"].ToString()),                                
-                                    cost = int.Parse(dr["COST"].ToString()),
-                                    status_id = dr["status_id"] == DBNull.Value ? 0 : Int32.Parse(dr["status_id"].ToString())
-
+                                    cost = double.Parse(dr["COST"].ToString()),
+                                    status_id = dr["status_id"] == DBNull.Value ? 0 : Int32.Parse(dr["status_id"].ToString()),
+                                    status = dr["status"].ToString()
                                 });
                             }
                         }
@@ -311,6 +329,41 @@ namespace restaurant_management.Common
                 finally
                 {
                     con.Close();
+                }
+            }
+        }
+        public bool UpdateOrderStatus(List<int> orders,int status)
+        {
+            using(SqlConnection con = new SqlConnection(strcon))
+            {
+                try
+                {
+                    con.Open();
+                    using(SqlTransaction tran = con.BeginTransaction())
+                    {
+                        string query = "UPDATE TBL_ORDERS SET ORDER_STATUS_ID = @STATUS WHERE ID = @ID"; 
+                        using(SqlCommand cmd = new SqlCommand(query,con,tran))
+                        {
+                            cmd.Parameters.Add("@STATUS", SqlDbType.Int); 
+                            cmd.Parameters.Add("@ID", SqlDbType.Int); 
+                            foreach (var item in orders)
+                            {
+                                cmd.Parameters["@STATUS"].Value = status;
+                                cmd.Parameters["@ID"].Value = item;
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        tran.Commit() ;
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return false; 
+                }
+                finally
+                {
+                    con.Close() ;
                 }
             }
         }

@@ -21,6 +21,11 @@
     <script src="/common.js"></script>
 
     <style>
+        body {
+            font-family: URW Chancery L, cursive;
+            background-color: #f5f5f5;
+        }
+
         #navbar {
             background: white;
             position: fixed;
@@ -84,7 +89,6 @@
     </style>
     <script>
         $(document).ready(function () {
-
             userSessionInfo = {
                 userId: 0,
                 roleId: 0,
@@ -111,6 +115,13 @@
                 else
                     $("#menuLink").attr('href', '/Admin/Menu.aspx');
             })
+            $("#orderItem").on('click', () => {
+                if (userSessionInfo.roleId == 20) {
+                    $("#orderLink").attr('href', '/Customers/OrderDetails.aspx');
+                }
+                else
+                    $("#orderLink").attr('href', '/Admin/AdminOrder.aspx');
+            })
         })
 
     </script>
@@ -121,7 +132,7 @@
     <form id="siteform" runat="server">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark" id="navbar">
             <div class="container">
-                <a class="navbar-brand" runat="server" href="~/">FOODZIE</a>
+                <a class="navbar-brand" runat="server" href="/Home.aspx">FOODZIE</a>
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -134,22 +145,23 @@
                         <li class="nav-item pe-1">
                             <asp:Button type="button" ID="logoutBtn" class="btn btn-danger" runat="server" Text="Logout" OnClick="logout_click" />
                         </li>
+                        <%if (ud != null && ud.roleId == 20)
+                            { %>
                         <li class="nav-item pe-2">
-                            <i class="fa-solid fa-wallet" style="color: #98b5e7; font-size:30px"></i>
+                            <i class="fa-solid fa-wallet" style="color: #98b5e7; font-size: 30px"></i>
                             <span class="nav-link" id="wallet"></span>
                         </li>
+                        <%} %>
                     </ul>
                 </div>
             </div>
         </nav>
-
         <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
             <div class="position-sticky ">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <img src="../images/user.png" alt="Profile Image" class="rounded-circle" width="60" height="60" />
                     </li>
-
                 </ul>
                 <div class="urls">
                     <ul id="sidebarlist">
@@ -157,15 +169,21 @@
                         </asp:ContentPlaceHolder>
                         <%if (Page.Title != "Profile")
                             { %>
-                        <li><a href="../Customers/Profile.aspx">Profile</a></li>
+                        <li>
+                            <%if(ud != null && ud.roleId != 10) { %>
+                               
+                            <a href="../Customers/Profile.aspx">Profile</a>
+                           <%  }
+                               else {%> 
+                            <a href="../Admin/Profile.aspx">Profile</a>
+                               <%}%>
+
+                        </li>
                         <%} %>
                         <li id="menuItem"><a id="menuLink">Menu</a></li>
-                        <li><a href="/Customers/OrderDetails.aspx">Orders</a></li>
-
+                        <li id="orderItem"><a id="orderLink">Orders</a></li>
                     </ul>
                 </div>
-
-
             </div>
         </nav>
 
@@ -174,12 +192,9 @@
             <div class="container body-content">
                 <asp:ContentPlaceHolder ID="MainContent" runat="server">
                 </asp:ContentPlaceHolder>
-
                 <hr />
-
             </div>
         </main>
-
         <asp:PlaceHolder runat="server">
             <%: Scripts.Render("~/Scripts/bootstrap.js") %>
         </asp:PlaceHolder>

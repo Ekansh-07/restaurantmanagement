@@ -283,7 +283,7 @@ namespace restaurant_management.Common
                                 role = dr.IsDBNull(5) ? "Unassigned" : (dr["role"].ToString()),
                                 email = dr["email"].ToString(),
                                 roleId = dr.IsDBNull(6) ? 0 : Int32.Parse(dr["role_id"].ToString()),
-                                wallet = int.Parse(dr["wallet"].ToString())
+                                wallet = double.Parse(dr["wallet"].ToString())
                             };
                             list.Add(userDetail);
                         }

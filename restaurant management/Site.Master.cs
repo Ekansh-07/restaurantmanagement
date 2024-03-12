@@ -21,7 +21,7 @@ namespace restaurant_management
         {
 
 
-            if (email != null && Session["email"] == null)
+            if (email != null )
             {
                 sessionData = common.getSessionData("sesssionData");
                 int roleId = sessionData.roleId;

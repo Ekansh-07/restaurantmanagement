@@ -14,6 +14,7 @@
         var tempStorage;
         $(document).ready(function () {
             if (userSessionInfo.roleId == 0) window.location.href = "../Admin/Login";
+            if (userSessionInfo.roleId == 20) window.location.href = "../Error.aspx";
             makeTable();
             loadTable();
             if (userSessionInfo.roleId == 30) { 

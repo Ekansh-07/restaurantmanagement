@@ -13,7 +13,7 @@ namespace restaurant_management.Modal
         public string email { get; set; }
         public string phone { get; set; }
         public int roleId { get; set; }
-        public int wallet { get; set; }
+        public double wallet { get; set; }
 
     }
 
@@ -47,7 +47,7 @@ namespace restaurant_management.Modal
         public int id { get; set; }
         public string name { get; set; }
 
-        public int price { get; set; }
+        public double price { get; set; }
 
         public string description { get; set; }
 
@@ -65,12 +65,13 @@ namespace restaurant_management.Modal
     {
         public int id { get; set; }
         public int user_id { get; set; }
+        public string name { get; set; }
         public DateTime order_date { get; set; }
         public int order_status_id { get; set; }
         public string order_status { get; set; }
         public int address_id { get; set; }
         public string address { get; set; }
-        public int order_cost { get; set; }
+        public double order_cost { get; set; }
     }
 
     public class Order_Mapping
@@ -87,8 +88,9 @@ namespace restaurant_management.Modal
         public int order_id { get; set; }
         public int item_id { get; set; }
         public int qty { get; set; }
-        public int cost { get; set; }
+        public double cost { get; set; }
         public int status_id { get; set; }
+        public string status { get; set; }
     }
 
     public class Modal

@@ -29,7 +29,7 @@ namespace restaurant_management.Payments
                
                 var payExecute = new PaymentExecution() { payer_id = payerId };
                 var result = payment.Execute(apiContext, payExecute);
-                var res = new Orders().PlaceOrder(SiteMaster.ud.Id,(int)cost,adrId); 
+                var res = new Orders().PlaceOrder(SiteMaster.ud.Id,cost,adrId); 
                 if(res)
                     Response.Redirect("/Customers/OrderDetails.aspx");
             }
