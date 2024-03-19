@@ -94,7 +94,7 @@
                 roleId: 0,
                 email: ''
             };
-            '<%if (Session["email"] != null)
+            '<%if (Session["email"] != null && ud!= null && ud.Id != 0)
         {%>'
             userSessionInfo.userId = '<%=restaurant_management.SiteMaster.ud.Id %>';
             userSessionInfo.roleId = '<%=restaurant_management.SiteMaster.ud.roleId %>'

@@ -268,7 +268,7 @@ namespace restaurant_management.Common
                 CON.Open();
                 using (SqlTransaction trans = CON.BeginTransaction())
                 {
-                    string query = "SELECT U.ID,FNAME,LNAME,EMAIL,PHONE_NUMBER,R.ROLE_NAME AS ROLE, R.ID AS ROLE_ID,WALLET FROM TBL_USERS U LEFT JOIN TBL_ROLE AS R ON R.ID = U.ROLE_ID";
+                    string query = "SELECT U.ID,FNAME,LNAME,EMAIL,PHONE_NUMBER,R.ROLE AS ROLE, R.ID AS ROLE_ID,WALLET FROM TBL_USERS U LEFT JOIN TBL_ROLE AS R ON R.ID = U.ROLE_ID";
                     SqlCommand cmd = new SqlCommand(query, CON, trans);
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -338,7 +338,7 @@ namespace restaurant_management.Common
                             Role r = new Role
                             {
                                 id = Int32.Parse(dr["id"].ToString()),
-                                role_name = dr["role_name"].ToString()
+                                role_name = dr["role"].ToString()
                             };
                             list.Add(r);
                         }

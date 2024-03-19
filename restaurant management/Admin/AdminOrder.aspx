@@ -72,8 +72,7 @@
                     {
                         field: 'checkbox',
                         title: '<input type="checkbox" id="selectAllOrders" name="selectAllOrdersCheckBox"/>',
-                        formatter: checkboxFormatter,
-                      
+                        formatter: checkboxFormatter,                   
                     },
                   
                     {
@@ -269,18 +268,24 @@
                 $('input[name="selectRowCheckBox"]:checked').each(function () {
                     list.push(this.value);
                 });
-                listJSON = JSON.stringify(list);
-                $.ajax({
-                    url: '/WS2.asmx/AcceptOrders',
-                    type: "POST",
-                    contentType: 'application/json;charset=utf-8',
-                    dataType: "json",
-                    data: JSON.stringify({ orders: listJSON }),
-                    success: function (response) {
-                        if (response)
+                if (list.length == 0) {
+                    displayMsg("No order selected");
+                }
+                else {
+
+                    listJSON = JSON.stringify(list);
+                    $.ajax({
+                        url: '/WS2.asmx/AcceptOrders',
+                        type: "POST",
+                        contentType: 'application/json;charset=utf-8',
+                        dataType: "json",
+                        data: JSON.stringify({ orders: listJSON }),
+                        success: function (response) {
+                            if (response)
                             window.location.reload();
-                    }
-                })
+                        }
+                    })
+                }
             });
         });
     </script>
