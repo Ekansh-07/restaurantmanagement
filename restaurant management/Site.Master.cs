@@ -32,15 +32,5 @@ namespace restaurant_management
                 Console.WriteLine(ud);
             }
         }
-
-        protected void logout_click(object sender, EventArgs e)
-        {
-            if(email != null)
-            email = null;
-            Session["email"] = null;
-            Session["roleid"] = null;
-            ud = new UserDetail();
-            Response.Redirect("/Admin/Login.aspx");
-        }
     }
 }

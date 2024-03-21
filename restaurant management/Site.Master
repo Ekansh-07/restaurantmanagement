@@ -67,6 +67,26 @@
             max-height: calc(100vh - 50px);
         }
 
+        #support{
+            position:fixed;
+            right:10px;
+            bottom: 20px;
+        }
+
+        #support{
+            height:60px;
+            width:60px; 
+            background-color: black; 
+            border-radius: 50%;
+            display:flex; 
+            align-items:center;
+            justify-content:center;
+        }
+
+        #support i{
+            font-size:2em;
+        }
+
         #sidebarlist {
             list-style-type: none;
             margin-top: 20px;
@@ -88,13 +108,15 @@
                 }
     </style>
     <script>
+        userSessionInfo = {
+            userId: 0,
+            roleId: 0,
+            email: '',
+            chatId: 0
+        };
         $(document).ready(function () {
-            userSessionInfo = {
-                userId: 0,
-                roleId: 0,
-                email: ''
-            };
-            '<%if (Session["email"] != null && ud!= null && ud.Id != 0)
+          
+            '<%if (email != null && ud != null && ud.Id != 0)
         {%>'
             userSessionInfo.userId = '<%=restaurant_management.SiteMaster.ud.Id %>';
             userSessionInfo.roleId = '<%=restaurant_management.SiteMaster.ud.roleId %>'
@@ -122,8 +144,18 @@
                 else
                     $("#orderLink").attr('href', '/Admin/AdminOrder.aspx');
             })
+            $("#support").on('click', () => {
+                callajax('POST', "/SupportService.asmx/SetChatStatus", JSON.stringify({ userId: userSessionInfo.userId }), fn);
+                window.location.href = "/Support/CustomerSupport.aspx";
+            });
+                       
         })
 
+        function handleLogOut() {
+            callgetajax('POST', "/WS.asmx/LogOut",fn )
+        }
+        function fn(data)
+        { window.location.href = data; }
     </script>
     <asp:ContentPlaceHolder ID="Script" runat="server">
     </asp:ContentPlaceHolder>
@@ -143,7 +175,7 @@
                             <span class="nav-link" id="u_email"></span>
                         </li>
                         <li class="nav-item pe-1">
-                            <asp:Button type="button" ID="logoutBtn" class="btn btn-danger" runat="server" Text="Logout" OnClick="logout_click" />
+                            <button type="button" ID="logoutBtn" class="btn btn-danger" onclick="handleLogOut()">Log Out</button>
                         </li>
                         <%if (ud != null && ud.roleId == 20)
                             { %>
@@ -170,14 +202,15 @@
                         <%if (Page.Title != "Profile")
                             { %>
                         <li>
-                            <%if(ud != null && ud.roleId != 10) { %>
-                               
-                            <a href="../Customers/Profile.aspx">Profile</a>
-                           <%  }
-                               else {%> 
-                            <a href="../Admin/Profile.aspx">Profile</a>
-                               <%}%>
+                            <%if (ud != null && ud.roleId != 10)
+                                { %>
 
+                            <a href="../Customers/Profile.aspx">Profile</a>
+                            <%  }
+                                else
+                                {%>
+                            <a href="../Admin/Profile.aspx">Profile</a>
+                            <%}%>
                         </li>
                         <%} %>
                         <li id="menuItem"><a id="menuLink">Menu</a></li>
@@ -192,6 +225,10 @@
             <div class="container body-content">
                 <asp:ContentPlaceHolder ID="MainContent" runat="server">
                 </asp:ContentPlaceHolder>
+                <%if (ud != null && ud.roleId == 20)
+                    {  %>
+                <div id="support"><i class="fa-solid fa-headset" style="color: #ffffff;"></i></div>
+                <%} %>
                 <hr />
             </div>
         </main>

@@ -53,6 +53,14 @@ namespace restaurant_management
         }
 
         [WebMethod]
+
+        public string LogOut()
+        {
+           return com.LogOut();
+
+        }
+
+        [WebMethod]
         public void UpdateUserDetails(string UserDetails)
         {
             User user = JsonConvert.DeserializeObject<User>(UserDetails);
@@ -144,12 +152,6 @@ namespace restaurant_management
             return recOb.DeleteDishStatus(recipe.id);
         }
 
-        [WebMethod]
-
-        public bool LogOut()
-        {
-            return com.LogOut();
-        }
 
         [WebMethod]
 

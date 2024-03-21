@@ -100,6 +100,17 @@ namespace restaurant_management.Modal
         public string Msg { get; set; }
         public DateTime Time { get; set; }
         public int User_id { get; set; }
+        public bool Is_Img {  get; set; }
+        public int Chat_Id { get; set; }
+    }
+
+    public class UserChat
+    {
+        public int Id { get; set; }
+        public string Fname { get; set; }
+        public string Lname { get; set; }
+        public int Chat_Id { get; set; }
+        public bool Active { get; set; }
     }
     public class Modal
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Web;
 
@@ -16,6 +17,11 @@ namespace restaurant_management.Common
             message.Body = mailBody;
             message.To.Add(email);
             smtpClient.Send(message);
+        }
+        
+        public void Practice()
+        {
+            
         }
 
     }

@@ -481,10 +481,11 @@ namespace restaurant_management.Common
                 }
             }
         }
-        public bool LogOut()
+        public string LogOut()
         {
             SiteMaster.email = null;
-            return true;
+            SiteMaster.ud = null;
+            return "/Admin/Login.aspx";
         }
 
 

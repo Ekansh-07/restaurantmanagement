@@ -114,7 +114,10 @@
                          if (res == 10) {
                             window.location.href = "/Admin/Profile.aspx";
 
-                        }
+                         }
+                         else if (res == 40) {
+                             window.location.href = "/Support/Support.aspx";
+                         }
                         else if (res == -1) {
                             alert("Not Authorised");
 

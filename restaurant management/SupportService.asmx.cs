@@ -20,8 +20,23 @@ namespace restaurant_management
     public class SupportService : System.Web.Services.WebService
     {
         SupportLogic sl = new SupportLogic();
+
         [WebMethod]
-        public bool SendMsg(string msg)
+
+        public int GetChatID(int userId)
+        {
+            return sl.GetChatID(userId); 
+        }
+
+        [WebMethod]
+
+        public string GetUsers()
+        {
+            return JsonConvert.SerializeObject(sl.GetUsers());
+        }
+
+        [WebMethod]
+        public int SendMsg(string msg)
         {
             Message Msg = new Message(); 
             Msg = JsonConvert.DeserializeObject<Message>(msg);  
@@ -30,9 +45,16 @@ namespace restaurant_management
 
         [WebMethod]
 
-        public string GetMsgs()
+        public string GetMsgs(int chat_id)
         {
-            return JsonConvert.SerializeObject(sl.GetMsgs());
+            return JsonConvert.SerializeObject(sl.GetMsgs(chat_id));
+        }
+
+        [WebMethod]
+
+        public bool SetChatStatus(int userId)
+        {
+            return sl.SetChatStatus(userId);
         }
     }
 }
