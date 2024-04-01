@@ -179,7 +179,7 @@
                 else {
                     $(".msger-inputarea").hide();
                 }
-            }, 5000);
+            }, 50000);
             $("#uploadImage").on('click', handleUpload);
             $("#endChat").on('click', () => {
                 clearInterval(interval);

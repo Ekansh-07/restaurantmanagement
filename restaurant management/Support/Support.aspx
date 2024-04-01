@@ -210,7 +210,7 @@
             background-color: rgb(238, 148, 23); 
         }
         .notification-txt{
-            color:white; 
+            color:white;  
             font-family:'Footlight MT';
             font-size: 3.5rem;
         }
@@ -221,25 +221,25 @@
     </style>
 
     <script>
-        var curChat = 0, curActiveUsers = []; S
+        var curChat = 0, curActiveUsers = []; 
 
         $(document).ready(function () { 
             getActiveUsers();
             $(".msger-inputarea").hide();
 
             if (userSessionInfo.roleId != 20 && userSessionInfo.roleId != 40) window.location.href = '/Admin/Profile.aspx';
-            setInterval(() => {
-                if (curChat != 0) {
-                    getChat(curChat);
-                }
-                else {
-                }
-            }, 5000);
+            //var chat = $.connection.myHub;
+
+            //chat.client.loadChat = function (chatId) {
+            //    if (curChat == chatId)
+            //        getChat(chatId);
+            //};
             if (userSessionInfo.roleId != 20 && userSessionInfo.roleId != 40) window.location.href = '/Admin/Profile.aspx';
             setInterval(() => {
                 getActiveUsers();
             }, 10000);
-           
+
+
             $("#uploadImage").on('click', handleUpload);
             $(".active-user-list").on('click', 'li', function () {
                 curChat = this.id;
@@ -273,10 +273,6 @@
                     $ul.append(li);
                 }
             })
-        }
-
-        function loadImgPreview() {
-            $("#imagePreview").attr('src', $("#imageInput").val())
         }
 
         function handleUpload() {
@@ -472,7 +468,7 @@
         </div>
     </div>
 
-    <div class="notification">
+  <%--  <div class="notification">
        <div class="notification-txt">New User has initiated chat</div>
-    </div>
+    </div>--%>
 </asp:Content>
