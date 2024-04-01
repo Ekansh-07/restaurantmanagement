@@ -153,7 +153,7 @@
         .msger-send-btn {
             float: right;
             margin-left: 10px;
-           
+            color: rgb(224, 218, 218)
         }
         .msger-chat {
             background-color: #fcfcfe;
