@@ -55,14 +55,14 @@
 
         function makeTable() {
             $("#menu").bootstrapTable({
-                height: "500",
+                height: "600",
                 cache: true,
                 striped: true,
                 pagination: true,
                 clickToEdit: true,
                 sidePagination: 'client',
                 useRowAttrFunc: true,
-                pageSize: 10,
+                pageSize: 2,
                 pageList: [10, 20, 50],
                 maintainSelected: true,
                 search: false,
@@ -369,10 +369,10 @@
         <button type="button" id="searchToggle" class="btn btn-success" data-toggle="modal" data-target="#searchModal" style="display: none">Get Inspired</button>
         </div>
     </div>
-    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal inmodal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-xl" role="document">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header ">
                     <h3 class="modal-title" id="searchModalLabel">Make a Search</h3>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>

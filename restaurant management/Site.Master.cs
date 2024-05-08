@@ -31,6 +31,12 @@ namespace restaurant_management
                 ud = new common().GetUserData(email);
                 Console.WriteLine(ud);
             }
+            if(ud== null)
+            {
+                string url = Request.Url.AbsolutePath;
+                string urlEncode = Server.UrlEncode(url);   
+                Response.Redirect(@"~/Admin/Login.aspx?rurl="+urlEncode,false);
+            }
         }
     }
 }

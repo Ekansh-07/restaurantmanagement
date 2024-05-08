@@ -57,7 +57,7 @@ namespace restaurant_management.Modal
 
         public int status_id { get; set; }
         public string status { get; set; }
-        
+        public bool is_special {  get; set; }
         public int  qty { get; set; }
     }
 

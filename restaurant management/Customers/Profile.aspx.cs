@@ -13,16 +13,13 @@ namespace restaurant_management.Customers
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (IsPostBack)
+            if (SiteMaster.ud != null)
             {
-                if (Session["email"] == null)
+                var roleId = SiteMaster.ud.roleId;
+                if (roleId == 10)
                 {
-                    Response.Redirect("/Admin/Login");
+                    Response.Redirect(@"~/Admin/Profile.aspx", false);
                 }
-            }
-            else
-            {
-                Console.WriteLine("yo");
             }
         }
     }

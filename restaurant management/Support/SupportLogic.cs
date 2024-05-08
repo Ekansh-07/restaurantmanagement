@@ -1,4 +1,5 @@
-﻿using restaurant_management.Modal;
+﻿using restaurant_management.Common;
+using restaurant_management.Modal;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -21,6 +22,7 @@ namespace restaurant_management.Support
         //        try
         //        {
         //            con.Open();
+
         //            using (SqlTransaction tran = con.BeginTransaction())
         //            {
         //                string query = "INSERT INTO TBL_MSG(CHAT_ID,USER_ID,MSG,TIME_STAMP,IS_IMG) VALUES(@CHAT,@USER,@MSG,@TIME,@FLAG)";
@@ -42,22 +44,18 @@ namespace restaurant_management.Support
 
         public int SendMsg(Message msg)
         {
-            // Construct the SQL query
+           
             string query = "INSERT INTO TBL_MSG(CHAT_ID, USER_ID, MSG, TIME_STAMP, IS_IMG) VALUES (@0, @1, @2, @3, @4)";
 
-            // Prepare arguments array
+            
             string[] args = {
-        msg.Chat_Id.ToString(),    // @0
-        msg.User_id.ToString(),    // @1
-        msg.Msg,                  // @2
-        DateTime.Now.ToString(), // @3
-        msg.Is_Img ? "1" : "0"   // @4
+        msg.Chat_Id.ToString(),    
+        msg.User_id.ToString(),    
+        msg.Msg,                  
+        DateTime.Now.ToString(), 
+        msg.Is_Img ? "1" : "0"   
     };
-
-            // Call the CallNonQuery method
             bool success = CallNonQuery(query, args);
-
-            // Return Chat_Id if the insertion was successful, otherwise return -1
             return success ? msg.Chat_Id : -1;
         }
 
@@ -245,14 +243,39 @@ namespace restaurant_management.Support
             }
         }
 
-
+        public static Result ClearChatData(int chat_id,SqlConnection con,SqlTransaction tran)
+        {
+            Result r  = new Result();
+            try
+            {
+                string query = "DELETE FROM TBL_MSG WHERE CHAT_ID = @PARAM_CHAT_ID"; 
+                using(SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = query;
+                    cmd.Connection = con;
+                    cmd.Transaction = tran;
+                    cmd.Parameters.AddWithValue("PARAM_CHAT_ID", chat_id); 
+                    cmd.ExecuteNonQuery();
+                    r.data = null;
+                    r.result = true;
+                    r.msg = "Chat deleted successfully"; 
+                    return r;
+                }
+            }
+            catch (Exception ex) {
+                r.data = null;
+                r.result = false;
+                r.msg = ex.ToString();
+                return r;
+            } 
+        }
         public bool SetChatStatus(int userId)
         {
             string query = "UPDATE TBL_CHATMAPPING SET ACTIVE = CASE WHEN ACTIVE = 0 THEN 1 ELSE 0 END WHERE USER_ID = @0;";
             string[] args = { userId.ToString() };
-            getDt(); 
             return CallNonQuery(query, args);
         }
+
 
     }
 }

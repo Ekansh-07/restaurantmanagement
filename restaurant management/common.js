@@ -65,3 +65,11 @@ function getdatacallajax(type, url, callback) {
         }
     });
 }
+
+function formatter(val) {
+    let formatter = new Intl.NumberFormat('en-IN', {
+        style: 'currency', currency: 'INR'
+    })
+    console.log(val);
+    return formatter.format(val);
+}

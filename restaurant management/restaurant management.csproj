@@ -111,6 +111,7 @@
     <Content Include="Admin\AdminOrder.aspx" />
     <Content Include="Admin\ForgetPassword.aspx" />
     <Content Include="Admin\Login.aspx" />
+    <Content Include="Admin\Logout.aspx" />
     <Content Include="Admin\Profile.aspx" />
     <Content Include="Admin\ResetPassword.aspx" />
     <Content Include="Admin\SignUp.aspx" />
@@ -142,6 +143,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Home.aspx" />
+    <Content Include="images\home.jpg" />
     <Content Include="images\homebg.jpg" />
     <Content Include="images\user.png" />
     <Content Include="Admin\Menu.aspx" />
@@ -237,6 +239,13 @@
     </Compile>
     <Compile Include="Admin\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Logout.aspx.designer.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\Profile.aspx.cs">
       <DependentUpon>Profile.aspx</DependentUpon>

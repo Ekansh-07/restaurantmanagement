@@ -60,7 +60,7 @@
 
     <script>
         $(document).ready(function () {
-            if (userSessionInfo.userId == 0) window.location.href = "/Admin/Login";
+            //if (userSessionInfo.userId == 0) window.location.href = "/Admin/Login";
             loadUserData();
             loadAddresses();
             urlhash = window.location.hash;

@@ -7,6 +7,7 @@
     <title></title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/common.js"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,7 +34,21 @@
             padding: 40px;
             width: 600px;
         }
-
+        .message-box {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%,-60%);
+            background-color: white;
+            color: #4CAF50;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            min-width: 400px;
+            text-align: center;
+            z-index: 9999;
+            display: none;
+        }
         h2 {
             margin-left: 60px;
             margin-bottom: 30px;
@@ -102,35 +117,33 @@
 
                 authDetailsJSON = JSON.stringify(authDetails);
                 $.ajax({
-                    url: '../WS.asmx/LoginUser',
+                    url: '/WS.asmx/LoginUser',
                     type: "POST",
                     contentType: 'application/json; charset=utf-8',
                     dataType: "json",
                     data: JSON.stringify({ UserAuth: authDetailsJSON }),
-                    success: function (response) {
-                        JSON.parse(response.d)
-                        res = response.d;
-                        console.log(res);
-                         if (res == 10) {
-                            window.location.href = "/Admin/Profile.aspx";
-
-                         }
-                         else if (res == 40) {
-                             window.location.href = "/Support/Support.aspx";
-                         }
-                        else if (res == -1) {
-                            alert("Not Authorised");
-
-                        }
-                        else if (res < 3) {
-                            alert("Email or Password Incorrect");
+                    success: function (response) {                     
+                        res = JSON.parse(response.d)
+                        if (res.result) {
+                            if (res.data == 40) {
+                                window.location.href = "/Support/Support.aspx";
+                            }
+                            else if (res.data == 10) {
+                                window.location.href = "/Admin/Profile.aspx";
+                            }
+                            else {
+                                const urlParams = new URLSearchParams(window.location.search);
+                                var returnUrl = urlParams.get('rurl');
+                                returnUrl = decodeURIComponent(returnUrl);
+                                if (returnUrl == null || returnUrl == "null") {
+                                    returnUrl = "/Admin/Profile.aspx";
+                                }
+                                window.location.href = returnUrl;
+                            }
                         }
                         else {
-                            setUserUrl("../Customers/Profile.aspx", $("#email").val());
-
+                            displayMsg(res.msg);
                         }
-
-                        $("#email").val("");
                         $("#pwd").val("");
                     },
                     error: function (error) {
@@ -168,6 +181,7 @@
 
             </div>
         </div>
+        <div class="message-box"></div>
     </form>
 </body>
 </html>

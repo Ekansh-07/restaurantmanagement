@@ -169,7 +169,7 @@
     <script>
         var chatId; 
         $(document).ready(function () {          
-            if (userSessionInfo.roleId != 20 && userSessionInfo.roleId != 40) window.location.href = '/Customers/CustomerMenu.aspx';
+          if (userSessionInfo.roleId != 0 && !(userSessionInfo.roleId == 20 || userSessionInfo.roleId == 40)) window.location.href = '/Customers/CustomerMenu.aspx';
             callajax('POST', '../SupportService.asmx/GetChatID', JSON.stringify({ userId: userSessionInfo.userId }), getChatId);
             var interval =  setInterval(() => {
                 if (userSessionInfo.chatId != 0) {
@@ -179,11 +179,11 @@
                 else {
                     $(".msger-inputarea").hide();
                 }
-            }, 50000);
+            }, 5000);
             $("#uploadImage").on('click', handleUpload);
             $("#endChat").on('click', () => {
                 clearInterval(interval);
-            callajax('POST', "../SupportService.asmx/SetChatStatus", JSON.stringify({ userId: userSessionInfo.userId }), fn);
+                callajax('POST', "../SupportService.asmx/ClearChatData", JSON.stringify({ chatId: userSessionInfo.chatId, userId: userSessionInfo.userId }), fn);
             });
         });
         function fn(data) { if(data) window.location.href = "../Customers/Profile.aspx"; }

@@ -1,8 +1,11 @@
 ﻿using Newtonsoft.Json;
+using restaurant_management.Common;
 using restaurant_management.Modal;
 using restaurant_management.Support;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
@@ -20,7 +23,7 @@ namespace restaurant_management
     public class SupportService : System.Web.Services.WebService
     {
         SupportLogic sl = new SupportLogic();
-
+        string strcon = ConfigurationManager.ConnectionStrings["con"].ConnectionString;
         [WebMethod]
 
         public int GetChatID(int userId)
@@ -48,6 +51,36 @@ namespace restaurant_management
         public string GetMsgs(int chat_id)
         {
             return JsonConvert.SerializeObject(sl.GetMsgs(chat_id));
+        }
+
+        [WebMethod]
+
+        public string ClearChatData(int chatId,int userId)
+        {
+            Result r = new Result ();
+            try
+            {
+
+                using (SqlConnection con = new SqlConnection(strcon))
+                {
+                    con.Open();
+                    using(SqlTransaction tran = con.BeginTransaction())
+                    {
+                        r = SupportLogic.ClearChatData(chatId,con,tran);
+                        if (!r.result)
+                        {
+                            throw new Exception(r.msg); 
+                        }
+
+                        tran.Commit();
+                        con.Close();
+                        SetChatStatus(userId); 
+                        return r.msg;
+                    }
+                }
+            }
+            catch (Exception e) { throw e; }
+            
         }
 
         [WebMethod]

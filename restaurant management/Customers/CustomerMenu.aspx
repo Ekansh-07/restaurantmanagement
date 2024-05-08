@@ -53,8 +53,7 @@
         cart = {};
         $(document).ready(function () {
             makeTable();
-            loadTable();
-            loadCart();
+            loadTable();         
             $('#toggle-vegetarian').on('change', function () {
                 var filterValue = $('#toggle-vegetarian').prop('checked') ? 20:10;
                 $('#menu').bootstrapTable('filterBy', {
@@ -76,8 +75,8 @@
                 dataType: "json",
                 success: function (response) {
                     var menuList = JSON.parse(response.d);
-                    console.log(menuList);
                     $("#menu").bootstrapTable('load', menuList);
+                    loadCart();
                 }
             })
         }
@@ -91,6 +90,7 @@
                 success: function (response) {
                     items = JSON.parse(response.d);
                     cart = items.Items;
+                    console.log(cart)
                     if (cart == null || JSON.stringify(cart) == "{}") {
                         cart = {};
                         $("#cartBtn").hide();

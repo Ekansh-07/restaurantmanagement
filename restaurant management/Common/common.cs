@@ -15,7 +15,14 @@ using System.Net.Mail;
 
 namespace restaurant_management.Common
 {
+    public class Result
+    {
+        public object data { get; set; }
+        public bool result { get; set; }
+        public object exc { get; set; }
 
+        public string msg { get; set; }
+    }
 
     public class common
     {
@@ -198,7 +205,7 @@ namespace restaurant_management.Common
             }
         }
 
-        public int UserLogin(Auth auth)
+        public Result UserLogin(Auth auth)
         {
             using (SqlConnection CON = new SqlConnection(strcon))
             {
@@ -208,10 +215,21 @@ namespace restaurant_management.Common
 
                     using (SqlTransaction trans = CON.BeginTransaction())
                     {
+                        Result r = new Result();
                         if (!EmailExist(auth.email))
-                            return 1;
+                        {
+                            r.data = -1;
+                            r.result = false;
+                            r.msg = "Email does not exist"; 
+                        }
+                            
                         int role = RoleExist(auth.email);
-                        if (role == -1) return role;
+                        if (role == -1)
+                        {
+                            r.data = -1;
+                            r.result = false;
+                            r.msg = "Role does not exist";
+                        }
 
                         SqlCommand cmd = new SqlCommand("SELECT PASSWORD from TBL_AUTH WHERE EMAIL = @EMAIL", CON, trans);
                         cmd.Parameters.AddWithValue("EMAIL", auth.email);
@@ -223,7 +241,9 @@ namespace restaurant_management.Common
                                 string hashed = GenerateHash(auth.password);
                                 if (!storedPwd.Equals(hashed))
                                 {
-                                    return 2;
+                                    r.data = -1;
+                                    r.result = false;
+                                    r.msg = "Wrong password";
                                 }
                                 else
                                 {
@@ -232,8 +252,10 @@ namespace restaurant_management.Common
                                     obj.roleId = role;
                                     obj.email = auth.email;
                                     common.setSessionData("sesssionData", obj);
-
-                                    return role;
+                                    r.data = role;
+                                    r.result = true;
+                                    r.msg = "Login successful";
+                                    
                                 }
                             }
 
@@ -241,14 +263,20 @@ namespace restaurant_management.Common
                         }
 
                         trans.Commit();
-                        return 2;
+                        return r;
 
                     }
                 }
-                catch (Exception ex) { return 2; }
+                catch (Exception ex) {
+                    Result r = new Result();
+                    r.data = 400;
+                    r.result = false;
+                    r.msg = "Exception occurred";
+                    r.exc = ex; 
+                    return r;
+                }
                 finally
                 {
-
                     CON.Close();
                 }
             }
@@ -480,12 +508,6 @@ namespace restaurant_management.Common
 
                 }
             }
-        }
-        public string LogOut()
-        {
-            SiteMaster.email = null;
-            SiteMaster.ud = null;
-            return "/Admin/Login.aspx";
         }
 
 

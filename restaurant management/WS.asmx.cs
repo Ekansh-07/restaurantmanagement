@@ -47,18 +47,13 @@ namespace restaurant_management
         [WebMethod]
         public string LoginUser(string UserAuth)
         {
+            Result r = new Result();
             Auth auth = JsonConvert.DeserializeObject<Auth>(UserAuth);
-            return Newtonsoft.Json.JsonConvert.SerializeObject(com.UserLogin(auth));
+            r= com.UserLogin(auth);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(r);
 
         }
 
-        [WebMethod]
-
-        public string LogOut()
-        {
-           return com.LogOut();
-
-        }
 
         [WebMethod]
         public void UpdateUserDetails(string UserDetails)
@@ -125,6 +120,20 @@ namespace restaurant_management
             List<Recipe> recipes = new List<Recipe>();
             recipes = recOb.GetDishes().Where(dish => dish.status_id == 30).ToList();
             return JsonConvert.SerializeObject(recipes);
+        }
+
+        [WebMethod]
+        public string GetSpecialDish()
+        {
+            List<Recipe> recipes = new List<Recipe>();
+            recipes = recOb.GetDishes().Where(dish => dish.status_id == 30).ToList();
+            var specialDish = recipes.Where(dish => dish.is_special).FirstOrDefault();
+            if(specialDish == null)
+            {
+                var random = new Random().Next(0, recipes.Count);
+                specialDish = recipes[random]; 
+            }
+            return JsonConvert.SerializeObject(specialDish);
         }
 
         [WebMethod]

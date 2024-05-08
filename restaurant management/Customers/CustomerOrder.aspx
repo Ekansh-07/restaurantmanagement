@@ -51,12 +51,7 @@
     <script>
         netBill = {}, orderDetails = {};
 
-        function formatter(val) {
-            let formatter = new Intl.NumberFormat('en-IN', {
-                style: 'currency', currency: 'INR'
-            })
-            return formatter.format(val);
-        }
+        
         function makeTable() {
             $("#orderTable").bootstrapTable({
                 classes: 'table table-borderless',
@@ -145,7 +140,7 @@
                 }
             })
         }
-
+        
         function calPrice(e, row, idx, val) {
             cur_price = row.price * row.qty;
             return `<div>${cur_price}</div>`;

@@ -115,7 +115,7 @@
             chatId: 0
         };
         $(document).ready(function () {
-          
+            debugger          
             '<%if (email != null && ud != null && ud.Id != 0)
         {%>'
             userSessionInfo.userId = '<%=restaurant_management.SiteMaster.ud.Id %>';
@@ -125,11 +125,12 @@
             $("#wallet").text('<%=restaurant_management.SiteMaster.ud.wallet %>')
             ' <%}
         else
-        {%>'
-            window.location.href = "../Admin/Login.aspx"
+        {%>'           
+            returnUrl = encodeURIComponent(window.location.href)
+            url = "/Admin/Login.aspx/?rurl=" + returnUrl;
+            window.location.href = url;
             '<% }%>'
            
-
             $("#menuItem").on('click', () => {
                 if (userSessionInfo.roleId == 20) {
                     $("#menuLink").attr('href', '/Customers/CustomerMenu.aspx');
@@ -150,11 +151,7 @@
             });
                        
         })
-
-        function handleLogOut() {
-            callgetajax('POST', "/WS.asmx/LogOut",fn )
-        }
-        function fn(data) { if (data) window.location.href = "/Support/CustomerSupport.aspx"; }
+        function fn(data) {  }
     </script>
     <asp:ContentPlaceHolder ID="Script" runat="server">
     </asp:ContentPlaceHolder>
@@ -174,7 +171,7 @@
                             <span class="nav-link" id="u_email"></span>
                         </li>
                         <li class="nav-item pe-1">
-                            <button type="button" ID="logoutBtn" class="btn btn-danger" onclick="handleLogOut()">Log Out</button>
+                            <a ID="logoutBtn" class="btn btn-danger" href="/Admin/Logout.aspx">Log Out</a>
                         </li>
                         <%if (ud != null && ud.roleId == 20)
                             { %>

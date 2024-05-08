@@ -11,7 +11,14 @@ namespace restaurant_management.Customers
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if(SiteMaster.ud != null)
+            {
+                var roleId = SiteMaster.ud.roleId; 
+                if(roleId != 20)
+                {
+                    Response.Redirect(@"~/Admin/Menu.aspx",false); 
+                }
+            }
         }
     }
 }
